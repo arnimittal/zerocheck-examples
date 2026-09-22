@@ -1,0 +1,15 @@
+version: zerocheck/v1
+name: Declined card shows an error and grants nothing
+description: Provider test mode only. The declined test card must not unlock paid access.
+blocks_merge: true
+steps:
+  - Navigate to /pricing
+  - Click "Upgrade to Pro"
+  - Verify text "Test Mode" is visible
+  - Enter "4000000000000002" into "Card number"
+  - Enter "12 / 34" into "Expiration"
+  - Enter "123" into "CVC"
+  - Enter "Zerocheck Test" into "Cardholder name"
+  - Click "Pay"
+  - Verify text "Your card was declined." is visible
+  - Verify text "Payment successful" is not visible

@@ -1,0 +1,77 @@
+name: Zerocheck
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      runner:
+        type: choice
+        options: [local, hosted]
+        default: local
+      environment:
+        type: choice
+        options: [dev, staging, production]
+        default: staging
+  # Uncomment to run the same checklist against staging on a schedule.
+  # schedule:
+  #   - cron: '0 8 * * 1-5'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: zerocheck-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ZEROCHECK_TOKEN: ${{ secrets.ZEROCHECK_TOKEN }}
+      ZEROCHECK_API: ${{ vars.ZEROCHECK_API || 'https://app.tryzerocheck.com' }}
+      # Add only the secret names referenced in zerocheck.yaml.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Zerocheck
+        run: |
+          npm install --prefix "$RUNNER_TEMP/zerocheck-cli" --no-save --package-lock=false zerocheck@0.1.6
+          echo "$RUNNER_TEMP/zerocheck-cli/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: Restore learned targets
+        uses: actions/cache@v4
+        with:
+          path: .zerocheck/cache
+          key: zerocheck-${{ runner.os }}-${{ github.event.inputs.environment || 'staging' }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            zerocheck-${{ runner.os }}-${{ github.event.inputs.environment || 'staging' }}-
+      - name: Install local browser
+        if: ${{ github.event.inputs.runner != 'hosted' }}
+        run: zerocheck install --with-deps
+      # Add application startup / test-fixture setup here when using localhost.
+      - name: Run checklist
+        id: checks
+        env:
+          ZEROCHECK_RUNNER: ${{ github.event.inputs.runner || 'local' }}
+          ZEROCHECK_ENV: ${{ github.event.inputs.environment || 'staging' }}
+        run: zerocheck run --runner "$ZEROCHECK_RUNNER" --env "$ZEROCHECK_ENV" --json .zerocheck/latest-run.json --junit .zerocheck/junit.xml
+      - name: Report results in pull request
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: zerocheck report --file .zerocheck/latest-run.json
+      - name: Save local results and recordings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zerocheck-results
+          path: |
+            .zerocheck/latest-run.json
+            .zerocheck/junit.xml
+            .zerocheck/artifacts
+          if-no-files-found: warn
