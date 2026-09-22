@@ -1,0 +1,15 @@
+# Repository checks are authoritative. Keep test secrets as ${ENV_VAR} references.
+project: your-project-id
+default_environment: dev
+test_directory: zerocheck/tests
+environments:
+  dev:
+    url: http://localhost:3000
+  staging:
+    url: https://staging.example.com
+    # Exact additional origins the agent may navigate to or interact with inside
+    # embedded frames. The app origin is implicit. Needed for the checkout tests.
+    allowed_origins:
+      - https://js.stripe.com
+execution:
+  retries: 1

@@ -1,0 +1,9 @@
+version: zerocheck/v1
+name: Search finds a product
+description: Assumes a product named Notebook exists in the test environment.
+blocks_merge: true
+steps:
+  - Navigate to {{app_url}}
+  - Enter "Notebook" into "Search"
+  - Click "Search"
+  - Verify text "Notebook" is visible

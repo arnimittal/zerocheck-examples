@@ -1,0 +1,11 @@
+version: zerocheck/v1
+name: Signup creates a workspace
+description: A fresh email on every run, so the test never depends on earlier state.
+blocks_merge: true
+steps:
+  - Navigate to /signup
+  - Enter "{{unique_email}}" into "Email"
+  - Enter "Zerocheck Test" into "Full name"
+  - Enter "${TEST_PASSWORD}" into "Password"
+  - Click "Create workspace"
+  - Verify text "Welcome" is visible
