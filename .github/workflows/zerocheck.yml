@@ -41,7 +41,7 @@ jobs:
           node-version: '22'
       - name: Install Zerocheck
         run: |
-          npm install --prefix "$RUNNER_TEMP/zerocheck-cli" --no-save --package-lock=false zerocheck@0.1.6
+          npm install --prefix "$RUNNER_TEMP/zerocheck-cli" --no-save --package-lock=false zerocheck@0.1.9
           echo "$RUNNER_TEMP/zerocheck-cli/node_modules/.bin" >> "$GITHUB_PATH"
       - name: Restore learned targets
         uses: actions/cache@v4
