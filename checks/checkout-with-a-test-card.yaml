@@ -1,6 +1,6 @@
 version: zerocheck/v1
 name: Upgrade to Pro with a test card
-description: Provider test mode only. Lists the payment frame origin under allowed_origins in zerocheck.yaml. Proves what the customer saw, not settlement or webhooks.
+description: Provider test mode only. Proves what the customer saw, not settlement or webhooks.
 blocks_merge: true
 steps:
   - Navigate to /pricing

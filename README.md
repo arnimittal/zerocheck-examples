@@ -34,7 +34,7 @@ npx zerocheck import --draft DRAFT_ID
 
 - Every test ends with a `Verify` step that names a visible outcome.
 - Test data uses placeholders such as `{{unique_email}}`; credentials use `${NAME}` references configured in `zerocheck.yaml` or the web app, never literal secrets.
-- Payment tests use the provider's test mode and public test cards, and list the payment frame's origin under `allowed_origins`.
+- Payment tests use the provider's test mode and public test cards. Embedded checkout frames need no origin list: `allowed_origins` is an optional restriction, and an environment that sets one must include the payment frame's origin.
 - Nothing here verifies an inbox, a webhook or a settlement. Keep those in your own integration tests.
 
 Reference: https://tryzerocheck.com/docs/test-format/ and https://tryzerocheck.com/llms.txt
