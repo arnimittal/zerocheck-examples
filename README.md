@@ -14,7 +14,7 @@ What is here:
 Requires Node.js 20.19 or newer and a Zerocheck project. Access is provisioned on an onboarding call; start at https://tryzerocheck.com/onboarding/.
 
 ```bash
-npm install --save-dev --save-exact zerocheck@0.1.6
+npm install --save-dev --save-exact zerocheck@0.1.9
 npx zerocheck login
 npx zerocheck init --url http://localhost:3000
 npx zerocheck install
