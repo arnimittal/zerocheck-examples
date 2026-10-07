@@ -7,9 +7,11 @@ environments:
     url: http://localhost:3000
   staging:
     url: https://staging.example.com
-    # Exact additional origins the agent may navigate to or interact with inside
-    # embedded frames. The app origin is implicit. Needed for the checkout tests.
-    allowed_origins:
-      - https://js.stripe.com
+    # Optional restriction. Omitted or empty, the agent may follow ordinary
+    # HTTP(S) navigation and interact with embedded frames. A nonempty list
+    # limits interaction to the app origin plus these exact origins, so a
+    # restricted environment running the checkout tests would need:
+    # allowed_origins:
+    #   - https://js.stripe.com
 execution:
   retries: 1
