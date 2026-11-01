@@ -1,0 +1,35 @@
+# An example to adapt.
+# Requires zerocheck in your repository's devDependencies, the ZEROCHECK_API variable
+# and the ZEROCHECK_TOKEN secret (a project token from Settings in the web app).
+name: Zerocheck
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ZEROCHECK_API: ${{ vars.ZEROCHECK_API }}
+      ZEROCHECK_TOKEN: ${{ secrets.ZEROCHECK_TOKEN }}
+      # Add only the secret variables referenced in zerocheck.yaml.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # Add application startup or a deployment wait here. The environment's URL
+      # must serve the change you mean to test.
+      - run: npx zerocheck run --env staging --json zerocheck-run.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zerocheck-run
+          path: zerocheck-run.json
+          if-no-files-found: ignore

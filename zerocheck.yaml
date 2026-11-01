@@ -1,10 +1,14 @@
-# Repository checks are authoritative. Keep test secrets as ${ENV_VAR} references.
+# Repository tests are edited in their files. Keep test secrets as ${ENV_VAR} references.
 project: your-project-id
 default_environment: dev
 test_directory: zerocheck/tests
 environments:
   dev:
     url: http://localhost:3000
+    # Add the secrets your tests reference, and set the variables where the CLI runs:
+    # secrets:
+    #   TEST_EMAIL: ${APP_TEST_EMAIL}
+    #   TEST_PASSWORD: ${APP_TEST_PASSWORD}
   staging:
     url: https://staging.example.com
     # Optional restriction. Omitted or empty, the agent may follow ordinary
@@ -13,5 +17,3 @@ environments:
     # restricted environment running the checkout tests would need:
     # allowed_origins:
     #   - https://js.stripe.com
-execution:
-  retries: 1

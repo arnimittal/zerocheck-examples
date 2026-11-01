@@ -1,34 +1,42 @@
 # Zerocheck examples
 
-Generic, runnable examples of Zerocheck tests: plain-English YAML that a QA agent runs in a real browser and reruns locally, in GitHub Actions or in a hosted browser. Adapt routes, labels and test data to your app.
+Zerocheck is an AI QA engineer that tests your app end to end. Verify critical flows and find bugs with a prompt.
+
+These are generic examples: YAML tests to run with the CLI, and a checklist to paste into the web app. Adapt routes, labels and test data to your app.
 
 What is here:
 
 - `zerocheck.yaml`: project configuration with named environments.
-- `release-checklist.md`: a checklist to import; one browser test is drafted per item.
+- `release-checklist.md`: a checklist to paste into Import checklist in the web app; one browser test is drafted per item.
 - `checks/`: five saved tests covering search, signup, a test-card checkout, a declined card and a password-reset request.
-- `.github/workflows/zerocheck.yml`: the GitHub Actions workflow the CLI generates, which runs the tests on every pull request and updates one comment.
+- `github/zerocheck.yml`: an example GitHub Actions job to adapt. The CLI does not generate it.
 
-## Run them
+## Run them with the CLI
 
-Requires Node.js 20.19 or newer and a Zerocheck project. Access is provisioned on an onboarding call; start at https://tryzerocheck.com/onboarding/.
+Requires Node.js 20.19 or newer and a dedicated Zerocheck instance, provisioned during hands-on onboarding: https://tryzerocheck.com/onboarding/. Copy `zerocheck.yaml` and the tests into your app's repository and set `project` to your project ID, then:
 
 ```bash
-npm install --save-dev --save-exact zerocheck@0.1.9
+npm install --save-dev --save-exact zerocheck
+npx playwright install chromium
+export ZEROCHECK_API="https://your-instance.example.com"
 npx zerocheck login
-npx zerocheck init --url http://localhost:3000
-npx zerocheck install
+mkdir -p zerocheck
 cp -R checks zerocheck/tests
-npx zerocheck validate
-npx zerocheck run --env dev --runner local
 ```
 
-Or import the checklist and review one drafted test per item before saving:
+Start with a test that needs no credentials:
 
 ```bash
-npx zerocheck import release-checklist.md --env dev --runner local
-npx zerocheck import --draft DRAFT_ID
+npx zerocheck run zerocheck/tests/search-finds-a-product.yaml --env dev
 ```
+
+Before running all five, set up the credentials two of them use. `signup-creates-a-workspace.yaml` and `password-reset-request.yaml` use the secret names `TEST_PASSWORD` and `TEST_EMAIL`, so add them under your environment's `secrets` in `zerocheck.yaml` and set the variables they name. Then:
+
+```bash
+npx zerocheck run --env dev
+```
+
+To use the checklist, open your instance's web app and choose Import checklist.
 
 ## Rules the examples follow
 
